@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphQLApp.Web", "GraphQLApp.Web\GraphQLApp.Web.csproj", "{6AAFC78A-B7B6-4FB7-A34F-EA8EEA8865B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphQLApp.Domain", "GraphQLApp.Domain\GraphQLApp.Domain.csproj", "{102962B3-B8BA-421C-B222-34CBA3A8F8B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphQLApp.Application", "GraphQLApp.Application\GraphQLApp.Application.csproj", "{C1408887-DCB9-4378-A0D3-FB6E79F05639}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphQLApp.Infrastructure", "GraphQLApp.Infrastructure\GraphQLApp.Infrastructure.csproj", "{1CD9BF4C-C4C6-4FB4-BCF5-F9F9E775C0C8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6AAFC78A-B7B6-4FB7-A34F-EA8EEA8865B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AAFC78A-B7B6-4FB7-A34F-EA8EEA8865B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AAFC78A-B7B6-4FB7-A34F-EA8EEA8865B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AAFC78A-B7B6-4FB7-A34F-EA8EEA8865B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{102962B3-B8BA-421C-B222-34CBA3A8F8B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{102962B3-B8BA-421C-B222-34CBA3A8F8B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{102962B3-B8BA-421C-B222-34CBA3A8F8B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{102962B3-B8BA-421C-B222-34CBA3A8F8B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1408887-DCB9-4378-A0D3-FB6E79F05639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1408887-DCB9-4378-A0D3-FB6E79F05639}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1408887-DCB9-4378-A0D3-FB6E79F05639}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1408887-DCB9-4378-A0D3-FB6E79F05639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CD9BF4C-C4C6-4FB4-BCF5-F9F9E775C0C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CD9BF4C-C4C6-4FB4-BCF5-F9F9E775C0C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CD9BF4C-C4C6-4FB4-BCF5-F9F9E775C0C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CD9BF4C-C4C6-4FB4-BCF5-F9F9E775C0C8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
