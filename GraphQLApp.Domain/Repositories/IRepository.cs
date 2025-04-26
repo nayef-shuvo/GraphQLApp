@@ -3,11 +3,22 @@ using GraphQLApp.Base.Abstractions;
 
 namespace GraphQLApp.Repositories;
 
-public interface IRepository<T, in TId> where T : IBaseEntity<TId> where TId : struct
+public interface IRepository<T, in TId>
+    where T : IBaseEntity<TId>
+    where TId : struct
 {
-    Task<T?> GetByIdAsync(TId id);
-    Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>>? predicate = null);
-    Task<IList<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null);
+    Task<T?> GetByIdAsync(TId id, bool includeDeleted = false);
+
+    Task<T?> FirstOrDefaultAsync(
+        Expression<Func<T, bool>>? predicate = null,
+        bool includeDeleted = false
+    );
+
+    Task<IList<T>> GetAllAsync(
+        Expression<Func<T, bool>>? predicate = null,
+        bool includeDeleted = false
+    );
+
     Task InsertAsync(T entity);
     Task InsertManyAsync(IEnumerable<T> entities);
     Task UpdateAsync(T entity);
