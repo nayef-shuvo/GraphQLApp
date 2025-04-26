@@ -1,11 +1,10 @@
 using System.Linq.Expressions;
+using GraphQLApp.Base;
 using GraphQLApp.Base.Abstractions;
 
 namespace GraphQLApp.Repositories;
 
-public interface IRepository<T, in TId>
-    where T : IBaseEntity<TId>
-    where TId : struct
+public interface IRepository<T, in TId> where T : IBaseEntity<TId> where TId : struct
 {
     Task<T?> GetByIdAsync(TId id, bool includeDeleted = false);
 

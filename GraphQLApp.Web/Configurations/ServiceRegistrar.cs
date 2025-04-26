@@ -1,4 +1,5 @@
 using GraphQLApp.Data;
+using GraphQLApp.Extensions;
 using GraphQLApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,15 +13,18 @@ public static class ServiceRegistrar
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
 
-        builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-        
         RegisterServices(builder.Services);
     }
 
     private static void RegisterServices(IServiceCollection services)
     {
+        services.AddControllers();
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+        services.AddAuthorization();
+        
         services.AddScoped(typeof(IRepository<,>), typeof(EfCoreRepository<,>));
+        
+        services.AddDependencies();
     }
 }

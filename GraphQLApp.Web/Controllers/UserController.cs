@@ -1,6 +1,6 @@
-using GraphQLApp.Dtos;
 using GraphQLApp.Entities;
 using GraphQLApp.Repositories;
+using GraphQLApp.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GraphQLApp.Controllers;
@@ -16,14 +16,14 @@ public class UserController : ControllerBase
         _userRepository = userRepository;
     }
 
-    [HttpGet("get")]
+    [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var users = await _userRepository.GetAllAsync();
+        var users = await _userRepository.GetAllAsync(includeDeleted: true);
         return Ok(users);
     }
 
-    [HttpGet("get/{id:guid}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get(Guid id)
     {
         var user = await _userRepository.GetByIdAsync(id);
@@ -44,11 +44,39 @@ public class UserController : ControllerBase
         {
             FirstName = userDto.FirstName,
             LastName = userDto.LastName,
-            Email = userDto.Email
+            Email = userDto.Email,
         };
 
         await _userRepository.InsertAsync(user);
 
         return Ok(user);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UserDto userDto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var user = await _userRepository.GetByIdAsync(id);
+
+        if (user is null)
+            return BadRequest("User not found");
+
+        user.FirstName = userDto.FirstName;
+        user.LastName = userDto.LastName;
+        user.Email = userDto.Email;
+
+        await _userRepository.UpdateAsync(user);
+
+        return Ok(user);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _userRepository.DeleteAsync(id);
+
+        return Created();
     }
 }

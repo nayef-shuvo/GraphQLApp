@@ -8,4 +8,12 @@
         <RootNamespace>GraphQLApp</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\GraphQLApp.Domain\GraphQLApp.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Base\TransientDependency.cs" />
+    </ItemGroup>
+
 </Project>
