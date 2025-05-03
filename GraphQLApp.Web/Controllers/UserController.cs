@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GraphQLApp.Controllers;
 
-[Route("user")]
+[Route("api/users")]
 [ApiController]
 public class UserController : ControllerBase
 {
