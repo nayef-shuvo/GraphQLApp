@@ -1,5 +1,6 @@
 using GraphQLApp.Data;
 using GraphQLApp.Extensions;
+using GraphQLApp.GraphQL;
 using GraphQLApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,9 +23,12 @@ public static class ServiceRegistrar
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddAuthorization();
-        
+
         services.AddScoped(typeof(IRepository<,>), typeof(EfCoreRepository<,>));
-        
+
+        services.AddGraphQLServer()
+            .AddQueryType<Query>();
+
         services.AddDependencies();
     }
 }
