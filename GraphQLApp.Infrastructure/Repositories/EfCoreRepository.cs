@@ -9,18 +9,20 @@ public class EfCoreRepository<T, TId> : IRepository<T, TId> where T : class, IBa
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly DbSet<T> _dbSet;
+    private readonly bool _isSoftDeleteSupported;
 
     public EfCoreRepository(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
         _dbSet = dbContext.Set<T>();
+        _isSoftDeleteSupported = typeof(ISoftDelete).IsAssignableFrom(typeof(T));
     }
 
     public async Task<T?> GetByIdAsync(TId id, bool includeDeleted = false)
     {
         var query = await AsQueryableAsync();
 
-        if (!includeDeleted && typeof(ISoftDelete).IsAssignableFrom(typeof(T)))
+        if (!includeDeleted && _isSoftDeleteSupported)
             query = query.Where(e => !EF.Property<bool>(e, nameof(ISoftDelete.IsDeleted)));
 
         return await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
@@ -31,7 +33,7 @@ public class EfCoreRepository<T, TId> : IRepository<T, TId> where T : class, IBa
     {
         var query = await AsQueryableAsync();
 
-        if (!includeDeleted && typeof(ISoftDelete).IsAssignableFrom(typeof(T)))
+        if (!includeDeleted && _isSoftDeleteSupported)
             query = query.Where(e => !EF.Property<bool>(e, nameof(ISoftDelete.IsDeleted)));
 
         if (predicate is null)
@@ -40,12 +42,12 @@ public class EfCoreRepository<T, TId> : IRepository<T, TId> where T : class, IBa
         return await query.FirstOrDefaultAsync(predicate);
     }
 
-    public async Task<IList<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null,
+    public async Task<IReadOnlyList<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null,
         bool includeDeleted = false)
     {
         var query = await AsQueryableAsync();
 
-        if (!includeDeleted && typeof(ISoftDelete).IsAssignableFrom(typeof(T)))
+        if (!includeDeleted && _isSoftDeleteSupported)
             query = query.Where(e => !EF.Property<bool>(e, nameof(ISoftDelete.IsDeleted)));
 
         if (predicate is not null)
@@ -54,28 +56,40 @@ public class EfCoreRepository<T, TId> : IRepository<T, TId> where T : class, IBa
         return await query.ToListAsync();
     }
 
-    public async Task InsertAsync(T entity)
+    public async Task<T> InsertAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
         await SaveChangesAsync();
+
+        return entity;
     }
 
-    public async Task InsertManyAsync(IEnumerable<T> entities)
+    public async Task<IReadOnlyList<T>> InsertManyAsync(IEnumerable<T> entities)
     {
-        await _dbSet.AddRangeAsync(entities);
+        var entityList = entities.ToList();
+
+        await _dbSet.AddRangeAsync(entityList);
         await SaveChangesAsync();
+
+        return entityList;
     }
 
-    public async Task UpdateAsync(T entity)
+    public async Task<T> UpdateAsync(T entity)
     {
         _dbSet.Update(entity);
         await SaveChangesAsync();
+
+        return entity;
     }
 
-    public async Task UpdateManyAsync(IEnumerable<T> entities)
+    public async Task<IReadOnlyList<T>> UpdateManyAsync(IEnumerable<T> entities)
     {
-        _dbSet.UpdateRange(entities);
+        var entityList = entities.ToList();
+
+        _dbSet.UpdateRange(entityList);
         await SaveChangesAsync();
+
+        return entityList;
     }
 
     public async Task DeleteAsync(TId id)
@@ -109,7 +123,7 @@ public class EfCoreRepository<T, TId> : IRepository<T, TId> where T : class, IBa
         if (baseEntities.Length == 0)
             return;
 
-        if (typeof(ISoftDelete).IsAssignableFrom(typeof(T)))
+        if (_isSoftDeleteSupported)
         {
             foreach (var entity in baseEntities)
             {
