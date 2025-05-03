@@ -17,9 +17,11 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.4" />
+        <PackageReference Include="Sqids" Version="3.1.0" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\GraphQLApp.Application\GraphQLApp.Application.csproj" />
         <ProjectReference Include="..\GraphQLApp.Domain\GraphQLApp.Domain.csproj"/>
     </ItemGroup>
 

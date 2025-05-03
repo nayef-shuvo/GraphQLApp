@@ -3,6 +3,7 @@ using GraphQLApp.Extensions;
 using GraphQLApp.GraphQL;
 using GraphQLApp.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Sqids;
 
 namespace GraphQLApp.Configurations;
 
@@ -28,6 +29,11 @@ public static class ServiceRegistrar
 
         services.AddGraphQLServer()
             .AddQueryType<Query>();
+
+        services.AddSingleton(new SqidsEncoder<int>(new SqidsOptions
+        {
+            MinLength = 10
+        }));
 
         services.AddDependencies();
     }

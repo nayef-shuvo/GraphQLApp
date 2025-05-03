@@ -1,7 +1,6 @@
-using GraphQLApp.Data;
 using GraphQLApp.Persistence;
 
-namespace GraphQLApp.Extensions;
+namespace GraphQLApp.Data.Extensions;
 
 public static class UnitOfWorkExtensions
 {

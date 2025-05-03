@@ -10,11 +10,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GraphQLApp.Domain\GraphQLApp.Domain.csproj" />
-      <ProjectReference Include="..\GraphQLApp.Infrastructure\GraphQLApp.Infrastructure.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Base\TransientDependency.cs" />
     </ItemGroup>
 
 </Project>

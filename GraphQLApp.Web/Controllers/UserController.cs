@@ -1,5 +1,3 @@
-using GraphQLApp.Entities;
-using GraphQLApp.Repositories;
 using GraphQLApp.Users;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,74 +7,51 @@ namespace GraphQLApp.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private readonly IRepository<User, Guid> _userRepository;
+    private readonly IUserService _userService;
 
-    public UserController(IRepository<User, Guid> userRepository)
+    public UserController(IUserService userService)
     {
-        _userRepository = userRepository;
+        _userService = userService;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var users = await _userRepository.GetAllAsync(includeDeleted: true);
+        var users = await _userService.GetAllAsync();
         return Ok(users);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> Get(Guid id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(string id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
-
-        if (user is null)
-            return NotFound("User not found");
-
+        var user = await _userService.GetByIdAsync(id);
         return Ok(user);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] UserDto userDto)
+    public async Task<IActionResult> Create([FromBody] CreateUpdateUserDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var user = new User
-        {
-            FirstName = userDto.FirstName,
-            LastName = userDto.LastName,
-            Email = userDto.Email,
-        };
-
-        await _userRepository.InsertAsync(user);
-
-        return Ok(user);
+        var userDto = await _userService.AddAsync(dto);
+        return Ok(userDto);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UserDto userDto)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update([FromRoute] string id, [FromBody] CreateUpdateUserDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var user = await _userRepository.GetByIdAsync(id);
-
-        if (user is null)
-            return BadRequest("User not found");
-
-        user.FirstName = userDto.FirstName;
-        user.LastName = userDto.LastName;
-        user.Email = userDto.Email;
-
-        await _userRepository.UpdateAsync(user);
-
-        return Ok(user);
+        var userDto = await _userService.UpdateAsync(id, dto);
+        return Ok(userDto);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
     {
-        await _userRepository.DeleteAsync(id);
-
+        await _userService.DeleteAsync(id);
         return Created();
     }
 }
