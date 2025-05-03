@@ -14,7 +14,19 @@ public class Query : IScopedDependency
 
     public async Task<IEnumerable<UserDto>> GetUsersAsync()
     {
-        var users = await _userService.GetAllAsync();
-        return users;
+        var result = await _userService.GetAllAsync();
+
+        return result.IsSuccess
+            ? result.Value!
+            : throw new GraphQLException(new Error(result.Error!, "USER_FETCH_FAILED"));
+    }
+
+    public async Task<UserDto> GetUserById(string id)
+    {
+        var result = await _userService.GetByIdAsync(id);
+
+        return result.IsSuccess
+            ? result.Value!
+            : throw new GraphQLException(new Error(result.Error!, "USER_NOT_FOUND"));
     }
 }

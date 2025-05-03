@@ -17,15 +17,21 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var users = await _userService.GetAllAsync();
-        return Ok(users);
+        var result = await _userService.GetAllAsync();
+
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : NotFound(result.Error);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(string id)
     {
-        var user = await _userService.GetByIdAsync(id);
-        return Ok(user);
+        var result = await _userService.GetByIdAsync(id);
+
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : NotFound(result.Error);
     }
 
     [HttpPost]
@@ -34,8 +40,11 @@ public class UserController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var userDto = await _userService.AddAsync(dto);
-        return Ok(userDto);
+        var result = await _userService.AddAsync(dto);
+
+        return result.IsSuccess
+            ? CreatedAtAction(nameof(Get), new { id = result.Value!.Id }, result.Value)
+            : BadRequest(result.Error);
     }
 
     [HttpPut("{id}")]
@@ -44,14 +53,20 @@ public class UserController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var userDto = await _userService.UpdateAsync(id, dto);
-        return Ok(userDto);
+        var result = await _userService.UpdateAsync(id, dto);
+
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : NotFound(result.Error);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-        await _userService.DeleteAsync(id);
-        return Created();
+        var result = await _userService.DeleteAsync(id);
+
+        return result.IsSuccess
+            ? NoContent()
+            : NotFound(result.Error);
     }
 }

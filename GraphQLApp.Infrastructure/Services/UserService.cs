@@ -1,58 +1,43 @@
+using GraphQLApp.Common;
 using GraphQLApp.Entities;
-using GraphQLApp.Exceptions;
 using GraphQLApp.Repositories;
 using GraphQLApp.Users;
-using Sqids;
 
 namespace GraphQLApp.Services;
 
 public class UserService : IUserService
 {
-    private readonly SqidsEncoder<int> _sqids;
     private readonly IRepository<User, int> _userRepository;
+    private readonly IIdObfuscationService _obfuscationService;
 
-    public UserService(SqidsEncoder<int> sqids, IRepository<User, int> userRepository)
+    public UserService(IRepository<User, int> userRepository, IIdObfuscationService obfuscationService)
     {
-        _sqids = sqids;
         _userRepository = userRepository;
+        _obfuscationService = obfuscationService;
     }
 
 
-    public async Task<UserDto?> GetByIdAsync(string id)
+    public async Task<Result<UserDto>> GetByIdAsync(string id)
     {
-        var intId = _sqids.Decode(id)[0];
+        var intId = _obfuscationService.Decode(id);
         var user = await _userRepository.GetByIdAsync(intId);
 
         if (user is null)
-            throw new EntityNotFoundException();
+            return Result<UserDto>.Failure("User not found");
 
-        var userDto = new UserDto
-        {
-            Id = _sqids.Encode(user.Id),
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email
-        };
-
-        return userDto;
+        var userDto = MapToDto(user);
+        return Result<UserDto>.Success(userDto);
     }
 
-    public async Task<IList<UserDto>> GetAllAsync()
+    public async Task<Result<IList<UserDto>>> GetAllAsync()
     {
         var users = await _userRepository.GetAllAsync();
+        var userDtos = users.Select(MapToDto).ToList();
 
-        var userDtos = users.Select(user => new UserDto
-        {
-            Id = _sqids.Encode(user.Id),
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email
-        }).ToList();
-
-        return userDtos;
+        return Result<IList<UserDto>>.Success(userDtos);
     }
 
-    public async Task<UserDto> AddAsync(CreateUpdateUserDto dto)
+    public async Task<Result<UserDto>> AddAsync(CreateUpdateUserDto dto)
     {
         var user = new User
         {
@@ -62,23 +47,18 @@ public class UserService : IUserService
         };
 
         user = await _userRepository.InsertAsync(user);
+        var userDto = MapToDto(user);
 
-        return new UserDto
-        {
-            Id = _sqids.Encode(user.Id),
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email
-        };
+        return Result<UserDto>.Success(userDto);
     }
 
-    public async Task<UserDto> UpdateAsync(string id, CreateUpdateUserDto dto)
+    public async Task<Result<UserDto>> UpdateAsync(string id, CreateUpdateUserDto dto)
     {
-        var intId = _sqids.Decode(id)[0];
+        var intId = _obfuscationService.Decode(id);
         var user = await _userRepository.GetByIdAsync(intId);
 
         if (user is null)
-            throw new EntityNotFoundException();
+            return Result<UserDto>.Failure("Entity not found");
 
         user.FirstName = dto.FirstName;
         user.LastName = dto.LastName;
@@ -86,21 +66,29 @@ public class UserService : IUserService
 
         user = await _userRepository.UpdateAsync(user);
 
-        return new UserDto
-        {
-            Id = _sqids.Encode(user.Id),
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email
-        };
+        var userDto = MapToDto(user);
+
+        return Result<UserDto>.Success(userDto);
     }
 
-    public async Task DeleteAsync(string id)
+    public async Task<Result> DeleteAsync(string id)
     {
-        var intId = _sqids.Decode(id)[0];
+        var intId = _obfuscationService.Decode(id);
         var user = await _userRepository.GetByIdAsync(intId);
 
         if (user is null)
-            throw new EntityNotFoundException();
+            return Result.Failure("User not found");
+
+        await _userRepository.DeleteAsync(user);
+
+        return Result.Success();
     }
+
+    private UserDto MapToDto(User user) => new()
+    {
+        Id = _obfuscationService.Encode(user.Id),
+        FirstName = user.FirstName,
+        LastName = user.LastName,
+        Email = user.Email
+    };
 }
