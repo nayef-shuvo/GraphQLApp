@@ -2,6 +2,7 @@ using GraphQLApp.Data;
 using GraphQLApp.Extensions;
 using GraphQLApp.GraphQL.Schema.Mutations;
 using GraphQLApp.GraphQL.Schema.Queries;
+using GraphQLApp.GraphQL.Schema.Subscriptions;
 using GraphQLApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Sqids;
@@ -16,11 +17,13 @@ public static class ServiceRegistrar
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
 
-        RegisterServices(builder.Services);
+        RegisterServices(builder);
     }
 
-    private static void RegisterServices(IServiceCollection services)
+    private static void RegisterServices(WebApplicationBuilder builder)
     {
+        var services = builder.Services;
+
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -30,11 +33,14 @@ public static class ServiceRegistrar
 
         services.AddGraphQLServer()
             .AddQueryType<Query>()
-            .AddMutationType<Mutation>();
+            .AddMutationType<Mutation>()
+            .AddSubscriptionType<Subscription>()
+            .AddInMemorySubscriptions();
 
         services.AddSingleton(new SqidsEncoder<int>(new SqidsOptions
         {
-            MinLength = 10
+            MinLength = 10,
+            Alphabet = builder.Configuration.GetValue<string>("Sqids:Alphabet")!
         }));
 
         services.AddDependencies();

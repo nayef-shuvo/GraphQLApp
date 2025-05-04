@@ -22,6 +22,7 @@ public class MiddlewareRegistrar
         }
 
         app.UseHttpsRedirection();
+        app.UseWebSockets();
         app.UseAuthorization();
         app.MapControllers();
         app.MapGraphQL(GraphQlUrl);
