@@ -17,13 +17,14 @@ public static class ServiceRegistrar
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
 
-        RegisterServices(builder);
+        var sqidsConfig = builder.Configuration.GetSection("Sqids").Get<SqidsOptions>();
+        builder.Services.AddSingleton(new SqidsEncoder<int>(sqidsConfig ?? new SqidsOptions { MinLength = 5 }));
+
+        RegisterServices(builder.Services);
     }
 
-    private static void RegisterServices(WebApplicationBuilder builder)
+    private static void RegisterServices(IServiceCollection services)
     {
-        var services = builder.Services;
-
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -36,12 +37,6 @@ public static class ServiceRegistrar
             .AddMutationType<Mutation>()
             .AddSubscriptionType<Subscription>()
             .AddInMemorySubscriptions();
-
-        services.AddSingleton(new SqidsEncoder<int>(new SqidsOptions
-        {
-            MinLength = 10,
-            Alphabet = builder.Configuration.GetValue<string>("Sqids:Alphabet")!
-        }));
 
         services.AddDependencies();
     }
