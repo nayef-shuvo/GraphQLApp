@@ -1,7 +1,7 @@
 using GraphQLApp.Base;
 using GraphQLApp.Users;
 
-namespace GraphQLApp.GraphQL;
+namespace GraphQLApp.GraphQL.Schema.Queries;
 
 public class Query : IScopedDependency
 {

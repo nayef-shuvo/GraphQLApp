@@ -1,6 +1,7 @@
 using GraphQLApp.Data;
 using GraphQLApp.Extensions;
-using GraphQLApp.GraphQL;
+using GraphQLApp.GraphQL.Schema.Mutations;
+using GraphQLApp.GraphQL.Schema.Queries;
 using GraphQLApp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Sqids;
@@ -28,7 +29,8 @@ public static class ServiceRegistrar
         services.AddScoped(typeof(IRepository<,>), typeof(EfCoreRepository<,>));
 
         services.AddGraphQLServer()
-            .AddQueryType<Query>();
+            .AddQueryType<Query>()
+            .AddMutationType<Mutation>();
 
         services.AddSingleton(new SqidsEncoder<int>(new SqidsOptions
         {
