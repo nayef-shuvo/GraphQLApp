@@ -482,6 +482,5 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
-
-/GraphQLApp.Web/appsettings.json
-/GraphQLApp.Web/appsettings.Development.json
+*appsettings.json
+*appsettings.Development.json
